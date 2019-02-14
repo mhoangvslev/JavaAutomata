@@ -5,10 +5,17 @@
  */
 package javaautomata.lexical;
 
+import javaautomata.lexical.exceptions.LexemeParsingException;
+
 /**
  *
  * @author minhhoangdang
  */
-public enum LexemeClass {
-    C, M, V, O, E, I, F, T
+public class LexemeC extends Lexeme {
+
+    public LexemeC(char symbol, String content) throws LexemeParsingException {
+        super(symbol, content, "^\'.*\'$");
+    }
+    
+    
 }
