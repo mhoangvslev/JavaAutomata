@@ -5,6 +5,9 @@
  */
 package javaautomata.lexical;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javaautomata.lexical.lexeme.*;
 import javaautomata.lexical.exceptions.LexemeParsingException;
 
@@ -18,6 +21,12 @@ public class LexemeBuilder {
     private final char symbol;
     private final String content;
 
+    /**
+     *
+     * @param line
+     * @param composition
+     * @throws LexemeParsingException
+     */
     public LexemeBuilder(String line) throws LexemeParsingException {
         symbol = line.charAt(0);
         evaluateLexemeClass(symbol); // will exit if fails

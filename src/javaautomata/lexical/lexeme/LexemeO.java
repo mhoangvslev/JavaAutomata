@@ -5,6 +5,8 @@
  */
 package javaautomata.lexical.lexeme;
 
+import java.util.ArrayList;
+import java.util.List;
 import javaautomata.lexical.exceptions.LexemeParsingException;
 
 /**
@@ -17,4 +19,10 @@ public class LexemeO extends Lexeme{
         super(symbol, content, "^\"["+ REGEX_ALPHA +"]+\"\\s*$");
     }
     
+    @Override
+    public List<String> getTokenisedContent(String str) {
+        List<String> result = new ArrayList<>();
+        result.add(str);
+        return result;
+    }
 }

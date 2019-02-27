@@ -5,16 +5,24 @@
  */
 package javaautomata.lexical.lexeme;
 
+import java.util.ArrayList;
+import java.util.List;
 import javaautomata.lexical.exceptions.LexemeParsingException;
 
 /**
  *
  * @author minhhoangdang
  */
-public class LexemeE extends Lexeme{
-    
+public class LexemeE extends Lexeme {
+
     public LexemeE(char symbol, String content) throws LexemeParsingException {
-        super(symbol, content, "["+ REGEX_NUM  +"]+");
+        super(symbol, content, "[" + REGEX_NUM + "]+");
     }
-    
+
+    @Override
+    public List<String> getTokenisedContent(String str) {
+        List<String> result = new ArrayList<>();
+        result.add(str);
+        return result;
+    }
 }
