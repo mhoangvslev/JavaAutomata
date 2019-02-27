@@ -3,19 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package javaautomata.lexical;
+package javaautomata.lexical.lexeme;
 
 import javaautomata.lexical.exceptions.LexemeParsingException;
+import javaautomata.lexical.lexeme.Lexeme;
 
 /**
  *
  * @author minhhoangdang
  */
-public class LexemeT extends Lexeme {
-
-    public LexemeT(char symbol, String content) throws LexemeParsingException {
-        super(symbol, content, "^[0-9]+\\s\'[A-Za-z#]\'\\s[0-9]+\\s\'[A-Za-z#]\'$");
-        
-    }    
+public class LexemeV extends Lexeme{
+    
+    public LexemeV(char symbol, String content) throws LexemeParsingException {
+        super(symbol, content, "^\"["+ REGEX_ALPHA +"]+\"$");
+    }
     
 }

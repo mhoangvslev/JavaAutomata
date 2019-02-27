@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package javaautomata.lexical;
+package javaautomata.lexical.lexeme;
 
 import javaautomata.lexical.exceptions.LexemeParsingException;
 
@@ -11,12 +11,11 @@ import javaautomata.lexical.exceptions.LexemeParsingException;
  *
  * @author minhhoangdang
  */
-public interface LexemeInterface {
+public class LexemeC extends Lexeme {
 
-    /**
-     * Evaluate the content of the lexeme
-     * @throws LexemeParsingException 
-     */
-    public void evaluate() throws LexemeParsingException;
-    public String getPattern();
+    public LexemeC(char symbol, String content) throws LexemeParsingException {
+        super(symbol, content, "^"+ REGEX_STR_DELIM +".*"+ REGEX_STR_DELIM +"$");
+    }
+    
+    
 }

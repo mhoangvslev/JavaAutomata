@@ -5,6 +5,7 @@
  */
 package javaautomata.lexical;
 
+import javaautomata.lexical.lexeme.*;
 import javaautomata.lexical.exceptions.LexemeParsingException;
 
 /**
@@ -30,9 +31,9 @@ public class LexemeBuilder {
      * @throws LexemeParsingException
      */
     private void evaluateLexemeClass(char symbol) throws LexemeParsingException {
-        String ref = "CMVOEOFT";
+        String ref = "CMVOEIFT";
         if (!ref.contains("" + symbol)) {
-            throw new LexemeParsingException("Symbol invalide");
+            throw new LexemeParsingException("Symbol invalide!");
         }
     }
 
@@ -44,10 +45,23 @@ public class LexemeBuilder {
      */
     public Lexeme createLexeme() throws LexemeParsingException {
         switch (symbol) {
-            case 'T':
-                return new LexemeT(symbol, content);
             case 'C':
                 return new LexemeC(symbol, content);
+            case 'M':
+                return new LexemeM(symbol, content);
+            case 'V':
+                return new LexemeV(symbol, content);
+            case 'O':
+                return new LexemeO(symbol, content);
+            case 'E':
+                return new LexemeE(symbol, content);
+            case 'I':
+                return new LexemeI(symbol, content);
+            case 'F':
+                return new LexemeF(symbol, content);
+            case 'T':
+                return new LexemeT(symbol, content);
+
             default:
                 return null;
         }

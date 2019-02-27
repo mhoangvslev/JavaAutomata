@@ -3,12 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/media/Windows/Users/minhh/OneDrive/UnivLR/L3/S6/Compilation/TeA/JavaAutomata/src/javaautomata/lexical/LexemeInterface.java</file>
-            <file>file:/media/Windows/Users/minhh/OneDrive/UnivLR/L3/S6/Compilation/TeA/JavaAutomata/src/javaautomata/lexical/LexemeT.java</file>
-            <file>file:/media/Windows/Users/minhh/OneDrive/UnivLR/L3/S6/Compilation/TeA/JavaAutomata/src/javaautomata/lexical/Lexeme.java</file>
-            <file>file:/media/Windows/Users/minhh/OneDrive/UnivLR/L3/S6/Compilation/TeA/JavaAutomata/src/javaautomata/lexical/LexemeC.java</file>
-            <file>file:/media/Windows/Users/minhh/OneDrive/UnivLR/L3/S6/Compilation/TeA/JavaAutomata/src/javaautomata/lexical/LexicalAnalyser.java</file>
-            <file>file:/media/Windows/Users/minhh/OneDrive/UnivLR/L3/S6/Compilation/TeA/JavaAutomata/src/javaautomata/lexical/LexemeBuilder.java</file>
+            <file>file:/media/Windows/Users/minhh/OneDrive/UnivLR/L3/S6/Compilation/TeA/JavaAutomaton/src/javaautomata/JavaAutomata.java</file>
+            <file>file:/media/Windows/Users/minhh/OneDrive/UnivLR/L3/S6/Compilation/TeA/JavaAutomaton/src/javaautomata/lexical/Lexeme.java</file>
         </group>
     </open-files>
 </project-private>
