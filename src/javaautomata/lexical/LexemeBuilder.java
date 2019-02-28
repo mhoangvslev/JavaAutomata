@@ -42,7 +42,7 @@ public class LexemeBuilder {
     private void evaluateLexemeClass(char symbol) throws LexemeParsingException {
         String ref = "CMVOEIFT";
         if (!ref.contains("" + symbol)) {
-            throw new LexemeParsingException("Symbol invalide!");
+            throw new LexemeParsingException("Symbol invalide!" + symbol);
         }
     }
 

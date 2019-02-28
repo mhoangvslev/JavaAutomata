@@ -7,10 +7,13 @@ package javaautomata.lexical;
 
 import javaautomata.lexical.lexeme.Lexeme;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,45 +48,53 @@ public class LexicalAnalyser {
      */
     public void readFile(String fileName) {
         this.success = 1;
+
         File file = new File(fileName);
-        if (file.exists()) {
-            System.out.println("Examining file " + file);
-            try {
-                BufferedReader br = new BufferedReader(new FileReader(file));
 
-                ArrayList<Lexeme> lexemes = new ArrayList<>();
-                Lexeme lexeme = null;
-                while ((line = br.readLine()) != null) {
-                    lexeme = new LexemeBuilder(line).createLexeme();
-                    lexemes.add(lexeme);
+        if (!file.exists()) {
+            return;
+        }
 
-                    if (lexeme.getSymbol() == 'T') {
-                        continue;
-                    } else {
-                        this.composition.put(lexeme.getSymbol(), (List) lexemes.clone());
-                        lexemes = new ArrayList<>();
-                    }
-                    success++;
+        System.out.println("Examining file " + file);
+        this.metadata.put("fileName", file.getName());
+        this.metadata.put("filePath", file.getParent() + '/');
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+
+            ArrayList<Lexeme> lexemes = new ArrayList<>();
+            Lexeme lexeme = null;
+            while ((line = br.readLine()) != null) {
+                lexeme = new LexemeBuilder(line).createLexeme();
+                lexemes.add(lexeme);
+
+                if (lexeme.getSymbol() == 'T') {
+                    continue;
+                } else {
+                    this.composition.put(lexeme.getSymbol(), (List) lexemes.clone());
+                    lexemes = new ArrayList<>();
                 }
-
-                this.composition.put(lexeme.getSymbol(), (List) lexemes.clone());
-                
-                System.out.println("\t> SYNTAX OK!");
-                checkSemantic();
-
-            } catch (FileNotFoundException ex) {
-                System.out.println("File not found! \n" + ex.getMessage());
-            } catch (IOException ex) {
-                System.out.println("Problem reading file");
-            } catch (LexemeParsingException ex) {
-                System.out.println(ex.getMessage() + " line[" + success + "]: " + line);
-            } catch (NumberFormatException ex) {
-                System.out.println(ex.getMessage());
+                success++;
             }
+
+            this.composition.put(lexeme.getSymbol(), (List) lexemes.clone());
+
+            System.out.println("\t> SYNTAX OK!");
+            checkSemantic();
+
+        } catch (FileNotFoundException ex) {
+            System.out.println("File not found! \n" + ex.getMessage());
+        } catch (IOException ex) {
+            System.out.println("Problem reading file");
+        } catch (LexemeParsingException ex) {
+            System.out.println(ex.getMessage() + " line[" + success + "]: " + line);
+        } catch (NumberFormatException ex) {
+            System.out.println(ex.getMessage());
         }
     }
 
     /**
+     * Vérifier si le tout a du sens
      *
      * @throws LexemeParsingException
      */
@@ -115,18 +126,20 @@ public class LexicalAnalyser {
         if (!this.composition.containsKey('F')) {
             throw new LexemeParsingException("Semantic error: Pas d'états acceptants");
         }
-        
+
         if (!this.composition.containsKey('T')) {
             throw new LexemeParsingException("Semantic error: Pas de transition!");
         }
+
+        System.out.println("\t>>" + this.composition);
 
         /*Summarise*/
         this.metadata.put("meta", this.getData('M', 0).get(0));
         this.metadata.put("vocab_entree", this.getData('V', 0).get(0));
         this.metadata.put("vocab_sortie", this.getData('O', 0).get(0));
         this.metadata.put("nb_etats", Integer.parseInt(this.getData('E', 0).get(0)) + 1);
-        this.metadata.put("etats_init", this.getData('I', 0).toString());
-        this.metadata.put("etats_acceptants", this.getData('F', 0).toString());
+        this.metadata.put("etats_init", this.getData('I', 0));
+        this.metadata.put("etats_acceptants", this.getData('F', 0));
 
         System.out.println("\t>> Summarise: " + this.metadata);
 
@@ -141,7 +154,7 @@ public class LexicalAnalyser {
             for (int i = 0; i < lex.getContent().size(); i++) {
                 String token = lex.getContent().get(i);
 
-                // Pour les attributs 1 et 3, vérifier si l'ID est entre [0, N-1].
+                /* Vérifier si l'ID est entre [0, N-1]. */
                 if (i % 2 == 0) {
                     int num = Integer.parseInt(token);
                     int nbEtats = (Integer) this.metadata.get("nb_etats");
@@ -161,7 +174,7 @@ public class LexicalAnalyser {
                 }
             }
         }
-        
+
         /* Si on arrive ici, alles gut! */
         System.out.println("\t> SEMANTIC OK!");
     }
@@ -190,6 +203,78 @@ public class LexicalAnalyser {
         return result;
     }
 
+    /**
+     * Convert to Graphviz .dot file Source:
+     * https://martin-thoma.com/how-to-draw-a-finite-state-machine/
+     *
+     * @param args
+     * @throws java.io.IOException
+     */
+    public void toDot() throws IOException {
+        String fileName = (String) this.metadata.get("fileName");
+        fileName = fileName.substring(0, fileName.indexOf("."));
+        String dir = (String) this.metadata.get("filePath");
+        String dotFile = dir + fileName + ".dot";
+        System.out.println(dir);
+
+        BufferedWriter fw = new BufferedWriter(new FileWriter(dotFile));
+
+        /* Initialisation */
+        fw.write("digraph G {\r\n" + "\trankdir=LR\r\n");
+
+        /* Les formes pour les etats acceptants */
+        List<String> finalStates = (List<String>) this.metadata.get("etats_acceptants");
+        for (String state : finalStates) {
+            fw.write("\tnode [shape = doublecircle]; " + state + ";\r\n");
+        }
+        
+        fw.write("\tnode [shape = point ]; qi\r\n"
+                + "\tnode [shape = circle];\r\n");
+
+        /* Les formes pour les états inits */
+        List<String> initStates = (List<String>) this.metadata.get("etats_init");
+        for (String state : initStates) {
+            fw.write("\tqi -> " + state + ";\r\n");
+        }
+
+        /* Ecrire les transitions */
+        for (Lexeme lex : this.composition.get('T')) {
+            String e = lex.getContent().get(0);
+            String eprime = lex.getContent().get(2);
+            String a = lex.getContent().get(1);
+            String o = lex.getContent().get(3);
+
+            fw.write("\t" + e + " -> " + eprime + " [ label=\"" + a + "/" + o + "\" ];\r\n");
+        }
+        fw.write("}\r\n");
+
+        /* Finalisation */
+        fw.flush();
+        fw.close();
+
+        /* dot to png */
+        String pngFile = dir + fileName + ".png";
+        Process p;
+        p = new ProcessBuilder("dot", "-Tpng", dotFile, "-o", pngFile).start();
+        BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        BufferedReader err = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+        // read the output from the command
+        String s = null;
+        System.out.println(">> Converting to png \n");
+        while ((s = in.readLine()) != null) {
+            System.out.println(s);
+        }
+
+        // read any errors from the attempted command
+        System.out.println(">> Error of the command (if any):\n");
+        while ((s = err.readLine()) != null) {
+            System.out.println(s);
+        }
+
+        p.destroy();
+    }
+
     public static void main(String[] args) throws IOException {
         File[] dirs = {new File("Exemples_Test_Moteur"), new File("Exemples_Test_Determinisation")};
         Map<String, LexicalAnalyser> moteurs = new HashMap<>();
@@ -200,6 +285,7 @@ public class LexicalAnalyser {
                 LexicalAnalyser analyser = new LexicalAnalyser();
                 moteurs.put(file.getName(), analyser);
                 analyser.readFile(file.getAbsolutePath());
+                analyser.toDot();
             }
         }
     }

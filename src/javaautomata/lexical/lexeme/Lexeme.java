@@ -20,10 +20,10 @@ public abstract class Lexeme {
     final List<String> content;
     final String pattern;
 
-    final static String REGEX_META = "(\\w\\S)";
-    final static String REGEX_ALPHA = "\\w";
-    final static String REGEX_NUM = "0-9";
-    final static String REGEX_STR_DELIM = "[\'\"]";
+    public final static String REGEX_META = "(\\W)";
+    public final static String REGEX_ALPHA = "\\w";
+    public final static String REGEX_NUM = "0-9";
+    public final static String REGEX_STR_DELIM = "[\'\"]";
 
     /**
      * Constructor
@@ -114,6 +114,6 @@ public abstract class Lexeme {
 
     @Override
     public String toString() {
-        return this.getClass().toString() + ": " + symbol + content + " eval using " + pattern;
+        return symbol + " " + content;
     }
 }
