@@ -2,5 +2,7 @@
 
 # JavaAutomaton 
 A Java application capable of parsing, compile and interprete fom .descr file.
+![App](JavaAutomata.png)
 
-![](https://upload.wikimedia.org/wikipedia/commons/d/d6/Parser_Flow%D5%B8.gif)
+# How it works
+![Func](https://upload.wikimedia.org/wikipedia/commons/d/d6/Parser_Flow%D5%B8.gif)

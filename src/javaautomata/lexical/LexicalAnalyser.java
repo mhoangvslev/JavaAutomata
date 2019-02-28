@@ -6,18 +6,10 @@
 package javaautomata.lexical;
 
 import javaautomata.lexical.lexeme.Lexeme;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javaautomata.automate.Automate;
 import javaautomata.lexical.exceptions.LexemeParsingException;
 import javaautomata.lexical.lexeme.*;
 
@@ -29,68 +21,13 @@ public class LexicalAnalyser {
 
     private final Map<Character, List<Lexeme>> composition;
     private final Map<String, Object> metadata;
-    private String line = "";
-    private int success;
 
     /**
      * Constructeur
      */
-    public LexicalAnalyser() {
-        this.composition = new HashMap<>();
-        this.metadata = new HashMap<>();
-        this.success = 1;
-    }
-
-    /**
-     * Lire les fichiers et check la syntaxe
-     *
-     * @param fileName
-     */
-    public void readFile(String fileName) {
-        this.success = 1;
-
-        File file = new File(fileName);
-
-        if (!file.exists()) {
-            return;
-        }
-
-        System.out.println("Examining file " + file);
-        this.metadata.put("fileName", file.getName());
-        this.metadata.put("filePath", file.getParent() + '/');
-
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-
-            ArrayList<Lexeme> lexemes = new ArrayList<>();
-            Lexeme lexeme = null;
-            while ((line = br.readLine()) != null) {
-                lexeme = new LexemeBuilder(line).createLexeme();
-                lexemes.add(lexeme);
-
-                if (lexeme.getSymbol() == 'T') {
-                    continue;
-                } else {
-                    this.composition.put(lexeme.getSymbol(), (List) lexemes.clone());
-                    lexemes = new ArrayList<>();
-                }
-                success++;
-            }
-
-            this.composition.put(lexeme.getSymbol(), (List) lexemes.clone());
-
-            System.out.println("\t> SYNTAX OK!");
-            checkSemantic();
-
-        } catch (FileNotFoundException ex) {
-            System.out.println("File not found! \n" + ex.getMessage());
-        } catch (IOException ex) {
-            System.out.println("Problem reading file");
-        } catch (LexemeParsingException ex) {
-            System.out.println(ex.getMessage() + " line[" + success + "]: " + line);
-        } catch (NumberFormatException ex) {
-            System.out.println(ex.getMessage());
-        }
+    public LexicalAnalyser(Automate automate) {
+        this.composition = automate.getComposition();
+        this.metadata = automate.getMetadata();
     }
 
     /**
@@ -201,93 +138,6 @@ public class LexicalAnalyser {
             System.out.println(ex.getMessage() + " Key: " + key + " Content: " + this.composition.get(key));
         }
         return result;
-    }
-
-    /**
-     * Convert to Graphviz .dot file Source:
-     * https://martin-thoma.com/how-to-draw-a-finite-state-machine/
-     *
-     * @param args
-     * @throws java.io.IOException
-     */
-    public void toDot() throws IOException {
-        String fileName = (String) this.metadata.get("fileName");
-        fileName = fileName.substring(0, fileName.indexOf("."));
-        String dir = (String) this.metadata.get("filePath");
-        String dotFile = dir + fileName + ".dot";
-        System.out.println(dir);
-
-        BufferedWriter fw = new BufferedWriter(new FileWriter(dotFile));
-
-        /* Initialisation */
-        fw.write("digraph G {\r\n" + "\trankdir=LR\r\n");
-
-        /* Les formes pour les etats acceptants */
-        List<String> finalStates = (List<String>) this.metadata.get("etats_acceptants");
-        for (String state : finalStates) {
-            fw.write("\tnode [shape = doublecircle]; " + state + ";\r\n");
-        }
-        
-        fw.write("\tnode [shape = point ]; qi\r\n"
-                + "\tnode [shape = circle];\r\n");
-
-        /* Les formes pour les états inits */
-        List<String> initStates = (List<String>) this.metadata.get("etats_init");
-        for (String state : initStates) {
-            fw.write("\tqi -> " + state + ";\r\n");
-        }
-
-        /* Ecrire les transitions */
-        for (Lexeme lex : this.composition.get('T')) {
-            String e = lex.getContent().get(0);
-            String eprime = lex.getContent().get(2);
-            String a = lex.getContent().get(1);
-            String o = lex.getContent().get(3);
-
-            fw.write("\t" + e + " -> " + eprime + " [ label=\"" + a + "/" + o + "\" ];\r\n");
-        }
-        fw.write("}\r\n");
-
-        /* Finalisation */
-        fw.flush();
-        fw.close();
-
-        /* dot to png */
-        String pngFile = dir + fileName + ".png";
-        Process p;
-        p = new ProcessBuilder("dot", "-Tpng", dotFile, "-o", pngFile).start();
-        BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        BufferedReader err = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-
-        // read the output from the command
-        String s = null;
-        System.out.println(">> Converting to png \n");
-        while ((s = in.readLine()) != null) {
-            System.out.println(s);
-        }
-
-        // read any errors from the attempted command
-        System.out.println(">> Error of the command (if any):\n");
-        while ((s = err.readLine()) != null) {
-            System.out.println(s);
-        }
-
-        p.destroy();
-    }
-
-    public static void main(String[] args) throws IOException {
-        File[] dirs = {new File("Exemples_Test_Moteur"), new File("Exemples_Test_Determinisation")};
-        Map<String, LexicalAnalyser> moteurs = new HashMap<>();
-
-        for (File dir : dirs) {
-            System.out.println("\n>>> " + dir.getAbsolutePath());
-            for (final File file : dir.listFiles()) {
-                LexicalAnalyser analyser = new LexicalAnalyser();
-                moteurs.put(file.getName(), analyser);
-                analyser.readFile(file.getAbsolutePath());
-                analyser.toDot();
-            }
-        }
     }
 
 }

@@ -1,4 +1,5 @@
 digraph G {
+	rankdir=LR
 	node [shape = doublecircle]; 0;
 	node [shape = doublecircle]; 1;
 	node [shape = doublecircle]; 2;
