@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package javaautomata.automate;
+package javaautomata.automata;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -25,17 +25,19 @@ import javaautomata.lexical.lexeme.Lexeme;
  *
  * @author minhhoangdang
  */
-public class Automate {
+public class Automata {
 
     private final Map<Character, List<Lexeme>> composition;
     private final Map<String, Object> metadata;
+    private final Graph graph;
 
     /**
      * Build an automate from scratch
      */
-    public Automate() {
+    public Automata() {
         this.composition = new HashMap<>();
         this.metadata = new HashMap<>();
+        this.graph = new Graph(this);
     }
 
     /**
@@ -43,14 +45,15 @@ public class Automate {
      *
      * @param fileName
      */
-    public Automate(String fileName) {
+    public Automata(String fileName) {
         this.composition = new HashMap<>();
         this.metadata = new HashMap<>();
+        this.graph = new Graph(this);
         this.fromDescr(fileName);
     }
 
     /**
-     * Lire les fichiers et check la syntaxe
+     * Import description file
      *
      * @param fileName
      */
@@ -102,8 +105,8 @@ public class Automate {
     }
 
     /**
-     * Convert to Graphviz .dot file Source:
-     * https://martin-thoma.com/how-to-draw-a-finite-state-machine/
+     * Convert to Graphviz .dot file
+     * <a href="https://martin-thoma.com/how-to-draw-a-finite-state-machine/">Source</a>
      *
      * @throws java.io.IOException
      */
@@ -154,15 +157,16 @@ public class Automate {
 
     /**
      * Convert to PNG
+     *
      * @param arg
-     * @throws IOException 
+     * @throws IOException
      */
     public void toPng(String arg) throws IOException {
         String dir = (arg != null) ? (String) this.metadata.get("filePath") : arg;
         String fileName = (String) this.metadata.get("fileName");
         fileName = fileName.substring(0, fileName.indexOf("."));
         String pngFile = dir + fileName + ".png";
-        
+
         Process p;
         p = new ProcessBuilder("dot", "-Tpng", dir + fileName + ".dot", "-o", pngFile).start();
         BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -184,6 +188,12 @@ public class Automate {
         p.destroy();
     }
 
+    /**
+     * Export to description file
+     *
+     * @param arg
+     * @throws IOException
+     */
     public void toDescr(String arg) throws IOException {
 
         String dir = (arg != null) ? (String) this.metadata.get("filePath") : arg;
@@ -222,18 +232,27 @@ public class Automate {
     }
 
     /**
+     * Get the composition of an automaton
      *
-     * @return
+     * @return the dictionary containing all the normalised lexeme.
      */
     public Map<Character, List<Lexeme>> getComposition() {
         return composition;
     }
 
     /**
+     * The metadata of the given automaton, retrievable using the following keys
+     * meta, vocab_entree, vocab_sortie, nb_etats, etats_init, etats_acceptants,
+     * estDeterministe
      *
-     * @return
+     * @return the dictionary containing all the infos
      */
     public Map<String, Object> getMetadata() {
         return metadata;
     }
+
+    public Graph getGraph() {
+        return graph;
+    }
+
 }

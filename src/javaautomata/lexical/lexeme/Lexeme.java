@@ -20,9 +20,24 @@ public abstract class Lexeme {
     final List<String> content;
     final String pattern;
 
+    /**
+     * REGEX component representing "not word" (\W)
+     */
     public final static String REGEX_META = "(\\W)";
+    
+    /**
+     * REGEX component representing "alphanumeric" (\w)
+     */
     public final static String REGEX_ALPHA = "\\w";
+    
+    /**
+     * REGEX component representing digit
+     */
     public final static String REGEX_NUM = "0-9";
+    
+    /**
+     * REGEX component representing quotation marks
+     */
     public final static String REGEX_STR_DELIM = "[\'\"]";
 
     /**
@@ -74,8 +89,8 @@ public abstract class Lexeme {
     }
 
     /**
-     *
-     * @return
+     * Returns the content of a lexeme
+     * @return List of tokens 
      */
     public List<String> getContent() {
         return content;
@@ -83,15 +98,15 @@ public abstract class Lexeme {
 
     /**
      *
-     * @return
+     * @return the regex pattern used for syntatic analysis
      */
     public String getPattern() {
         return pattern;
     }
 
     /**
-     *
-     * @return
+     * Tokenise the contents
+     * @return List of tokens
      */
     public List<String> getTokenisedContent(String str) {
         List<String> result = new ArrayList<>();
@@ -105,8 +120,8 @@ public abstract class Lexeme {
     }
 
     /**
-     *
-     * @return
+     * Return the lexeme class
+     * @return the class of the lexeme
      */
     public char getSymbol() {
         return symbol;

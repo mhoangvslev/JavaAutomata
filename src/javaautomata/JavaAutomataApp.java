@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javaautomata.automate.Automate;
+import javaautomata.automata.Automata;
 import javaautomata.lexical.LexicalAnalyser;
 import javaautomata.lexical.exceptions.LexemeParsingException;
 import javaautomata.lexical.lexeme.Lexeme;
@@ -21,8 +21,9 @@ import javax.swing.JFileChooser;
  */
 public class JavaAutomataApp extends javax.swing.JFrame {
 
-    private Automate mAutomate;
+    private Automata mAutomate;
     private LexicalAnalyser mAnalyser;
+    private String mScript = "";
 
     /**
      * Creates new form JavaAutomataApp
@@ -44,21 +45,22 @@ public class JavaAutomataApp extends javax.swing.JFrame {
         jMenu4 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jLabel1 = new javax.swing.JLabel();
-        AppResponsePanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jLabel2 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
+        gClientCmd = new javax.swing.JPanel();
         inCliCmd = new javax.swing.JTextField();
         jLabelCmd = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
+        AppResponsePanel = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea_Output = new javax.swing.JTextArea();
+        jLabel2 = new javax.swing.JLabel();
+        gComposition = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextArea_Composition = new javax.swing.JTextArea();
         jLabel3 = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
+        gMetadata = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTextArea_MetaData = new javax.swing.JTextArea();
+        bHelp = new javax.swing.JButton();
         jMenuBar2 = new javax.swing.JMenuBar();
         jMenu5 = new javax.swing.JMenu();
         miFromFile = new javax.swing.JMenuItem();
@@ -77,15 +79,23 @@ public class JavaAutomataApp extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(600, 400));
         setMinimumSize(new java.awt.Dimension(600, 400));
-        setPreferredSize(new java.awt.Dimension(600, 400));
         setResizable(false);
 
+        jLabel1.setFont(new java.awt.Font("Ubuntu", 1, 18)); // NOI18N
         jLabel1.setText("JavaAutomata");
 
-        jTextArea1.setEditable(false);
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        inCliCmd.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                inCliCmdKeyPressed(evt);
+            }
+        });
+
+        jLabelCmd.setText("Client Commands:");
+
+        jTextArea_Output.setEditable(false);
+        jTextArea_Output.setColumns(20);
+        jTextArea_Output.setRows(5);
+        jScrollPane1.setViewportView(jTextArea_Output);
 
         jLabel2.setText("Output:");
 
@@ -106,37 +116,32 @@ public class JavaAutomataApp extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 211, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        inCliCmd.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                inCliCmdKeyPressed(evt);
-            }
-        });
-
-        jLabelCmd.setText("Client Commands:");
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout gClientCmdLayout = new javax.swing.GroupLayout(gClientCmd);
+        gClientCmd.setLayout(gClientCmdLayout);
+        gClientCmdLayout.setHorizontalGroup(
+            gClientCmdLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(gClientCmdLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(gClientCmdLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabelCmd)
                     .addComponent(inCliCmd, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
+            .addComponent(AppResponsePanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        gClientCmdLayout.setVerticalGroup(
+            gClientCmdLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(gClientCmdLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabelCmd)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(inCliCmd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(AppResponsePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jTextArea_Composition.setEditable(false);
@@ -146,53 +151,65 @@ public class JavaAutomataApp extends javax.swing.JFrame {
 
         jLabel3.setText("Composition: ");
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout gCompositionLayout = new javax.swing.GroupLayout(gComposition);
+        gComposition.setLayout(gCompositionLayout);
+        gCompositionLayout.setHorizontalGroup(
+            gCompositionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(gCompositionLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
+                .addGroup(gCompositionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(gCompositionLayout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        gCompositionLayout.setVerticalGroup(
+            gCompositionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(gCompositionLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
         jLabel4.setText("Metadata:");
 
+        jTextArea_MetaData.setEditable(false);
         jTextArea_MetaData.setColumns(20);
         jTextArea_MetaData.setRows(5);
         jScrollPane3.setViewportView(jTextArea_MetaData);
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        javax.swing.GroupLayout gMetadataLayout = new javax.swing.GroupLayout(gMetadata);
+        gMetadata.setLayout(gMetadataLayout);
+        gMetadataLayout.setHorizontalGroup(
+            gMetadataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(gMetadataLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
+                .addGroup(gMetadataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(gMetadataLayout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane3))
                 .addContainerGap())
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        gMetadataLayout.setVerticalGroup(
+            gMetadataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(gMetadataLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
                 .addContainerGap())
         );
+
+        bHelp.setText("Help");
+        bHelp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bHelpActionPerformed(evt);
+            }
+        });
 
         jMenu5.setText("File");
 
@@ -249,34 +266,36 @@ public class JavaAutomataApp extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(241, 241, 241))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(AppResponsePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(157, 157, 157)
+                        .addComponent(bHelp))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(26, 26, 26)
+                        .addComponent(gClientCmd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(gComposition, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(gMetadata, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(22, 22, 22))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(bHelp))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(AppResponsePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(94, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(gComposition, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(gMetadata, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(gClientCmd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         pack();
@@ -332,11 +351,16 @@ public class JavaAutomataApp extends javax.swing.JFrame {
         if (sig == JFileChooser.APPROVE_OPTION) {
             try {
                 File file = chooser.getSelectedFile();
-                this.mAutomate = new Automate(file.getAbsolutePath());
+                this.mAutomate = new Automata(file.getAbsolutePath());
                 this.mAnalyser = new LexicalAnalyser(this.mAutomate);
                 this.mAnalyser.checkSemantic();
-                
+                this.mAutomate.getGraph().buildGraph();
+
                 this.updateAutomate();
+
+                this.jTextArea_Output.setText(this.mAutomate.getGraph().getLog());
+                this.mAutomate.getGraph().clearLog();
+
             } catch (LexemeParsingException | NumberFormatException ex) {
                 Logger.getLogger(JavaAutomataApp.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -366,7 +390,7 @@ public class JavaAutomataApp extends javax.swing.JFrame {
 
     private void miFromScratchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miFromScratchActionPerformed
         // TODO add your handling code here:
-        this.mAutomate = new Automate();
+        this.mAutomate = new Automata();
         this.mAnalyser = new LexicalAnalyser(this.mAutomate);
         this.updateAutomate();
     }//GEN-LAST:event_miFromScratchActionPerformed
@@ -374,9 +398,42 @@ public class JavaAutomataApp extends javax.swing.JFrame {
     private void inCliCmdKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_inCliCmdKeyPressed
         // TODO add your handling code here:
         if (evt.getKeyCode() == 10) {
-            this.updateAutomate();
+            String cmd = this.inCliCmd.getText();
+            if (!cmd.equals("")) {
+
+                if (cmd.contains("clear")) {
+                    this.mScript = "";
+                    this.jTextArea_Output.setText("");
+
+                } else {
+                    for (char c : cmd.toCharArray()) {
+                        String vocab = (String) this.mAutomate.getMetadata().get("vocab_entree");
+                        if (!vocab.contains("" + c)) {
+                            this.jTextArea_Output.setText(this.jTextArea_Output.getText() + "invalid sequence! Use the provided input vocabulary!\r\n");
+                            return;
+                        }
+                    }
+                    mScript += cmd + "\r\n";
+                    this.jTextArea_Output.setText(this.jTextArea_Output.getText() + cmd + "\r\n");
+
+                }
+            } else {
+                this.mAutomate.getGraph().translateFromScript(mScript);
+                this.jTextArea_Output.setText(this.mAutomate.getGraph().getLog());
+            }
+
+            this.inCliCmd.setText("");
         }
     }//GEN-LAST:event_inCliCmdKeyPressed
+
+    private void bHelpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bHelpActionPerformed
+        // TODO add your handling code here:
+        this.mScript = "";
+        this.jTextArea_Output.setText(""
+                + "---------- HELP ----------\r\n"
+                + "cmd: sequence + Enter \r\n"
+                + "type 'clear' to reset script\r\n");
+    }//GEN-LAST:event_bHelpActionPerformed
 
     /**
      * @param args the command line arguments
@@ -444,6 +501,10 @@ public class JavaAutomataApp extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel AppResponsePanel;
+    private javax.swing.JButton bHelp;
+    private javax.swing.JPanel gClientCmd;
+    private javax.swing.JPanel gComposition;
+    private javax.swing.JPanel gMetadata;
     private javax.swing.JTextField inCliCmd;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -455,15 +516,12 @@ public class JavaAutomataApp extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu5;
     private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea_Composition;
     private javax.swing.JTextArea jTextArea_MetaData;
+    private javax.swing.JTextArea jTextArea_Output;
     private javax.swing.JMenuItem miExportDescr;
     private javax.swing.JMenuItem miExportGraphviz;
     private javax.swing.JMenuItem miExportImage;

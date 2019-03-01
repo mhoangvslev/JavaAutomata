@@ -9,7 +9,7 @@ import javaautomata.lexical.lexeme.Lexeme;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javaautomata.automate.Automate;
+import javaautomata.automata.Automata;
 import javaautomata.lexical.exceptions.LexemeParsingException;
 import javaautomata.lexical.lexeme.*;
 
@@ -25,7 +25,7 @@ public class LexicalAnalyser {
     /**
      * Constructeur
      */
-    public LexicalAnalyser(Automate automate) {
+    public LexicalAnalyser(Automata automate) {
         this.composition = automate.getComposition();
         this.metadata = automate.getMetadata();
     }
@@ -77,6 +77,7 @@ public class LexicalAnalyser {
         this.metadata.put("nb_etats", Integer.parseInt(this.getData('E', 0).get(0)) + 1);
         this.metadata.put("etats_init", this.getData('I', 0));
         this.metadata.put("etats_acceptants", this.getData('F', 0));
+        this.metadata.put("estDeterministe", (this.getData('V', 0).size() == 1));
 
         System.out.println("\t>> Summarise: " + this.metadata);
 

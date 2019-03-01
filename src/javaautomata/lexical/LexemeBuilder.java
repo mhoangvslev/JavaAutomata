@@ -19,9 +19,8 @@ public class LexemeBuilder {
     private final String content;
 
     /**
-     *
-     * @param line
-     * @param composition
+     * Constructor
+     * @param line the line fed from file reading process
      * @throws LexemeParsingException
      */
     public LexemeBuilder(String line) throws LexemeParsingException {
@@ -32,7 +31,6 @@ public class LexemeBuilder {
 
     /**
      * Check whether the symbol is valid
-     *
      * @param symbol the first symbol extracted
      * @throws LexemeParsingException
      */
@@ -45,8 +43,7 @@ public class LexemeBuilder {
 
     /**
      * Generate subclass lexemes
-     *
-     * @return
+     * @return a lexeme
      * @throws javaautomata.lexical.exceptions.LexemeParsingException
      */
     public Lexeme createLexeme() throws LexemeParsingException {
