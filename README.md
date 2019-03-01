@@ -1,4 +1,4 @@
-[![Waffle.io - Columns and their card count](https://badge.waffle.io/mhoangvslev/JavaAutomaton.svg?columns=all)](https://waffle.io/mhoangvslev/JavaAutomaton)
+[![Waffle.io - Columns and their card count](https://badge.waffle.io/mhoangvslev/JavaAutomaton.svg?columns=all)](https://waffle.io/mhoangvslev/JavaAutomata)
 
 # JavaAutomata 
 A Java application capable of parsing, compile and interprete from .descr file.
