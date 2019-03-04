@@ -2,3 +2,7 @@
 build/
 
 dist/
+
+temp/
+
+nbproject/

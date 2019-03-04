@@ -5,14 +5,18 @@
  */
 package javaautomata;
 
+import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javaautomata.analyser.SemanticAnalyser;
 import javaautomata.automata.Automata;
 import javaautomata.analyser.SyntaxAnalyser;
+import javaautomata.automata.Transformer;
 import javaautomata.lexical.exceptions.LexemeParsingException;
 import javaautomata.lexical.lexeme.Lexeme;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
 /**
@@ -21,8 +25,9 @@ import javax.swing.JFileChooser;
  */
 public class JavaAutomataApp extends javax.swing.JFrame {
 
-    private Automata mAutomate;
-    private SyntaxAnalyser mAnalyser;
+    private Automata mAutomata;
+    private SyntaxAnalyser mSyntaxAnalyser;
+    private SemanticAnalyser mSemanticAnalyser;
     private String mScript = "";
 
     /**
@@ -61,6 +66,8 @@ public class JavaAutomataApp extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         jTextArea_MetaData = new javax.swing.JTextArea();
         bHelp = new javax.swing.JButton();
+        mLabelImage = new javax.swing.JLabel();
+        bTransformNDFA = new javax.swing.JButton();
         jMenuBar2 = new javax.swing.JMenuBar();
         jMenu5 = new javax.swing.JMenu();
         miFromFile = new javax.swing.JMenuItem();
@@ -79,7 +86,6 @@ public class JavaAutomataApp extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(600, 400));
         setMinimumSize(new java.awt.Dimension(600, 400));
-        setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Ubuntu", 1, 18)); // NOI18N
         jLabel1.setText("JavaAutomata");
@@ -211,6 +217,15 @@ public class JavaAutomataApp extends javax.swing.JFrame {
             }
         });
 
+        mLabelImage.setText("Preview");
+
+        bTransformNDFA.setText("NDFA2DFA");
+        bTransformNDFA.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bTransformNDFAActionPerformed(evt);
+            }
+        });
+
         jMenu5.setText("File");
 
         miFromFile.setText("From File...");
@@ -266,14 +281,16 @@ public class JavaAutomataApp extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(157, 157, 157)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(bTransformNDFA)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(bHelp))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(26, 26, 26)
+                    .addComponent(mLabelImage, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(gClientCmd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -286,8 +303,9 @@ public class JavaAutomataApp extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(bHelp))
+                    .addComponent(bHelp)
+                    .addComponent(bTransformNDFA)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -295,7 +313,9 @@ public class JavaAutomataApp extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(gMetadata, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(gClientCmd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(mLabelImage, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(41, Short.MAX_VALUE))
         );
 
         pack();
@@ -311,7 +331,7 @@ public class JavaAutomataApp extends javax.swing.JFrame {
         if (sig == JFileChooser.APPROVE_OPTION) {
             try {
                 File file = chooser.getSelectedFile();
-                this.mAutomate.toDot(file.getAbsolutePath());
+                this.mAutomata.toDot(file.getAbsolutePath());
             } catch (NumberFormatException ex) {
                 Logger.getLogger(JavaAutomataApp.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
@@ -332,7 +352,7 @@ public class JavaAutomataApp extends javax.swing.JFrame {
         if (sig == JFileChooser.APPROVE_OPTION) {
             try {
                 File file = chooser.getSelectedFile();
-                this.mAutomate.toPng(file.getAbsolutePath());
+                this.mAutomata.toPng(file.getAbsolutePath());
             } catch (NumberFormatException | IOException ex) {
                 Logger.getLogger(JavaAutomataApp.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -351,15 +371,18 @@ public class JavaAutomataApp extends javax.swing.JFrame {
         if (sig == JFileChooser.APPROVE_OPTION) {
             try {
                 File file = chooser.getSelectedFile();
-                this.mAutomate = new Automata(file.getAbsolutePath());
-                this.mAnalyser = new SyntaxAnalyser(this.mAutomate);
-                this.mAnalyser.checkSyntax();
-                this.mAutomate.getGraph().buildGraph();
+                this.mAutomata = new Automata(file.getAbsolutePath());
+                this.mSyntaxAnalyser = new SyntaxAnalyser(this.mAutomata);
+                this.mSemanticAnalyser = new SemanticAnalyser(this.mAutomata);
+
+                this.mSyntaxAnalyser.checkSyntax();
+                this.mSemanticAnalyser.checkDeterministic();
+                this.mAutomata.getGraph().buildGraph();
 
                 this.updateAutomate();
 
-                this.jTextArea_Output.setText(this.mAutomate.getGraph().getLog());
-                this.mAutomate.getGraph().clearLog();
+                this.jTextArea_Output.setText(this.mAutomata.getGraph().getLog());
+                this.mAutomata.getGraph().clearLog();
 
             } catch (LexemeParsingException | NumberFormatException ex) {
                 Logger.getLogger(JavaAutomataApp.class.getName()).log(Level.SEVERE, null, ex);
@@ -379,7 +402,7 @@ public class JavaAutomataApp extends javax.swing.JFrame {
         if (sig == JFileChooser.APPROVE_OPTION) {
             try {
                 File file = chooser.getSelectedFile();
-                this.mAutomate.toDescr(file.getAbsolutePath());
+                this.mAutomata.toDescr(file.getAbsolutePath());
             } catch (NumberFormatException | IOException ex) {
                 Logger.getLogger(JavaAutomataApp.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -390,8 +413,8 @@ public class JavaAutomataApp extends javax.swing.JFrame {
 
     private void miFromScratchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miFromScratchActionPerformed
         // TODO add your handling code here:
-        this.mAutomate = new Automata();
-        this.mAnalyser = new SyntaxAnalyser(this.mAutomate);
+        this.mAutomata = new Automata();
+        this.mSyntaxAnalyser = new SyntaxAnalyser(this.mAutomata);
         this.updateAutomate();
     }//GEN-LAST:event_miFromScratchActionPerformed
 
@@ -407,7 +430,7 @@ public class JavaAutomataApp extends javax.swing.JFrame {
 
                 } else {
                     for (char c : cmd.toCharArray()) {
-                        String vocab = (String) this.mAutomate.getMetadata().get("vocab_entree");
+                        String vocab = (String) this.mAutomata.getMetadata().get("vocab_entree");
                         if (!vocab.contains("" + c)) {
                             this.jTextArea_Output.setText(this.jTextArea_Output.getText() + "invalid sequence! Use the provided input vocabulary!\r\n");
                             return;
@@ -418,8 +441,8 @@ public class JavaAutomataApp extends javax.swing.JFrame {
 
                 }
             } else {
-                this.mAutomate.getGraph().translateFromScript(mScript);
-                this.jTextArea_Output.setText(this.mAutomate.getGraph().getLog());
+                this.mAutomata.getGraph().translateFromScript(mScript);
+                this.jTextArea_Output.setText(this.mAutomata.getGraph().getLog());
             }
 
             this.inCliCmd.setText("");
@@ -434,6 +457,26 @@ public class JavaAutomataApp extends javax.swing.JFrame {
                 + "cmd: sequence + Enter \r\n"
                 + "type 'clear' to reset script\r\n");
     }//GEN-LAST:event_bHelpActionPerformed
+
+    private void bTransformNDFAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bTransformNDFAActionPerformed
+        try {
+            // TODO add your handling code here:
+            this.mAutomata = Transformer.DFA2NDFA(mAutomata);
+            this.mSyntaxAnalyser = new SyntaxAnalyser(this.mAutomata);
+            this.mSemanticAnalyser = new SemanticAnalyser(this.mAutomata);
+
+            this.mSyntaxAnalyser.checkSyntax();
+            this.mSemanticAnalyser.checkDeterministic();
+            this.mAutomata.getGraph().buildGraph();
+
+            this.updateAutomate();
+
+        } catch (LexemeParsingException ex) {
+            System.out.println("Transformation error: parsing " + ex.getMessage());
+        } catch (CloneNotSupportedException ex) {
+            System.out.println("Transformation error: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_bTransformNDFAActionPerformed
 
     /**
      * @param args the command line arguments
@@ -472,11 +515,11 @@ public class JavaAutomataApp extends javax.swing.JFrame {
 
     public void updateAutomate() {
 
-        if (this.mAutomate == null) {
+        if (this.mAutomata == null) {
             return;
         }
 
-        if (this.mAutomate.getComposition().size() < 1 || this.mAutomate.getMetadata().size() < 1) {
+        if (this.mAutomata.getComposition().size() < 1 || this.mAutomata.getMetadata().size() < 1) {
             this.jTextArea_Composition.setText("");
             this.jTextArea_MetaData.setText("");
             return;
@@ -485,8 +528,8 @@ public class JavaAutomataApp extends javax.swing.JFrame {
         String composition = "";
         String ref = "CMVOEIFT";
         for (Character c : ref.toCharArray()) {
-            if (this.mAutomate.getComposition().get(c) != null) {
-                for (Lexeme l : this.mAutomate.getComposition().get(c)) {
+            if (this.mAutomata.getComposition().get(c) != null) {
+                for (Lexeme l : this.mAutomata.getComposition().get(c)) {
                     composition += l.toString() + "\r\n";
                 }
             }
@@ -494,14 +537,34 @@ public class JavaAutomataApp extends javax.swing.JFrame {
         this.jTextArea_Composition.setText(composition);
 
         String metadata = "";
-        for (String attr : this.mAutomate.getMetadata().keySet()) {
-            metadata += attr + ": " + this.mAutomate.getMetadata().get(attr) + "\r\n";
+        for (String attr : this.mAutomata.getMetadata().keySet()) {
+            metadata += attr + ": " + this.mAutomata.getMetadata().get(attr) + "\r\n";
         }
         this.jTextArea_MetaData.setText(metadata);
+
+        /* Image */
+        try {
+            this.mAutomata.toPng("temp");
+            String imageName = (String) this.mAutomata.getMetadata().get("fileName");
+            imageName = imageName.substring(0, imageName.lastIndexOf("."));
+            System.out.println(imageName);
+
+            this.mLabelImage.setIcon(new ImageIcon(
+                    new ImageIcon("temp/" + imageName + ".png").getImage().getScaledInstance(
+                            this.mLabelImage.getWidth(), this.mLabelImage.getHeight(), Image.SCALE_SMOOTH)
+            ));
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage() + " Could export to temp dir");
+        }
+
+        /* Transform */
+        boolean isDFA = (boolean) this.mAutomata.getMetadata().get("estDeterministe");
+        this.bTransformNDFA.setVisible(!isDFA);
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel AppResponsePanel;
     private javax.swing.JButton bHelp;
+    private javax.swing.JButton bTransformNDFA;
     private javax.swing.JPanel gClientCmd;
     private javax.swing.JPanel gComposition;
     private javax.swing.JPanel gMetadata;
@@ -522,6 +585,7 @@ public class JavaAutomataApp extends javax.swing.JFrame {
     private javax.swing.JTextArea jTextArea_Composition;
     private javax.swing.JTextArea jTextArea_MetaData;
     private javax.swing.JTextArea jTextArea_Output;
+    private javax.swing.JLabel mLabelImage;
     private javax.swing.JMenuItem miExportDescr;
     private javax.swing.JMenuItem miExportGraphviz;
     private javax.swing.JMenuItem miExportImage;

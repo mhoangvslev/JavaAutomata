@@ -102,8 +102,8 @@ public class Graph {
     private String log;
 
     /**
-     * 
-     * @param automata 
+     *
+     * @param automata
      */
     Graph(Automata automata) {
         this.automata = automata;
@@ -112,7 +112,7 @@ public class Graph {
     }
 
     /**
-     * 
+     *
      */
     public void buildGraph() {
         List<String> inits = (List<String>) automata.getMetadata().get("etats_init");
@@ -146,12 +146,12 @@ public class Graph {
         }
 
         log("Graph path is...");
-        displayGraph(this.tree.get("0"), "-");
+        //displayGraph(this.tree.get("0"), "-");
     }
 
     /**
-     * 
-     * @param script 
+     *
+     * @param script
      */
     public void translateFromScript(String script) {
         try {
@@ -177,8 +177,8 @@ public class Graph {
     }
 
     /**
-     * 
-     * @param line 
+     *
+     * @param line
      */
     private void interprete(String line) {
         log("Processing sequence '" + line + "':");
@@ -195,11 +195,11 @@ public class Graph {
     }
 
     /**
-     * 
+     *
      * @param node
      * @param itr
      * @param letter
-     * @return 
+     * @return
      */
     private String readFrom(Node node, StringCharacterIterator itr, char letter) {
 
@@ -240,10 +240,14 @@ public class Graph {
         this.log = "";
     }
 
+    public Map<String, Node> getTree() {
+        return tree;
+    }
+
     /**
-     * 
+     *
      * @param node
-     * @param lvl 
+     * @param lvl
      */
     public void displayGraph(Node node, String lvl) {
         log(lvl + " " + node.getNodeName());

@@ -24,6 +24,7 @@ public class SyntaxAnalyser {
 
     /**
      * Constructeur
+     *
      * @param automate l'automate à analyser
      */
     public SyntaxAnalyser(Automata automate) {
@@ -78,9 +79,11 @@ public class SyntaxAnalyser {
         this.metadata.put("nb_etats", Integer.parseInt(this.getData('E', 0).get(0)) + 1);
         this.metadata.put("etats_init", this.getData('I', 0));
         this.metadata.put("etats_acceptants", this.getData('F', 0));
-        this.metadata.put("estDeterministe", (this.getData('V', 0).size() == 1));
 
         System.out.println("\t>> Summarise: " + this.metadata);
+
+        List<String> listUsedEtats = new ArrayList<>();
+        List<String> listUsedInputs = new ArrayList<>();
 
         /* Coherence check in T lexemes*/
         for (Lexeme lex : this.composition.get('T')) {
@@ -90,6 +93,16 @@ public class SyntaxAnalyser {
                 lex.getContent().add("" + this.metadata.get("meta"));
             }
 
+            /* meta */
+            if (!listUsedEtats.contains(lex.getContent().get(0))) {
+                listUsedEtats.add(lex.getContent().get(0));
+            }
+            
+            if (!listUsedInputs.contains(lex.getContent().get(1))) {
+                listUsedInputs.add(lex.getContent().get(1));
+            }
+
+            /* Autres */
             for (int i = 0; i < lex.getContent().size(); i++) {
                 String token = lex.getContent().get(i);
 
@@ -107,7 +120,7 @@ public class SyntaxAnalyser {
                     }
                 } /* Vérifier si ID est dans le vocab de sortie */ else {
                     String vocabSortie = (String) this.metadata.get("vocab_sortie") + this.metadata.get("meta");
-                    if (!vocabSortie.contains(token)) {
+                    if (!(vocabSortie + this.metadata.get("meta")).contains(token)) {
                         throw new LexemeParsingException("L'ID de l'état '" + token + "' doit être dans '" + vocabSortie + "'");
                     }
                 }
@@ -115,6 +128,9 @@ public class SyntaxAnalyser {
         }
 
         /* Si on arrive ici, alles gut! */
+        
+        this.metadata.put("usedInputs", listUsedInputs);
+        this.metadata.put("usedStates", listUsedEtats);
         System.out.println("\t> SYNTAX OK!");
     }
 

@@ -14,7 +14,7 @@ import javaautomata.lexical.exceptions.LexemeParsingException;
 public class LexemeC extends Lexeme {
 
     public LexemeC(char symbol, String content) throws LexemeParsingException {
-        super(symbol, content, "^"+ REGEX_STR_DELIM +".*"+ REGEX_STR_DELIM +"$");
+        super(symbol, content, "^"+ REGEX_STR_DELIM +"{0,1}.*"+ REGEX_STR_DELIM +"{0,1}$");
     }
     
     

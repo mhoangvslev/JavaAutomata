@@ -17,7 +17,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javaautomata.analyser.LexicalAnalyser;
+import javaautomata.analyser.SemanticAnalyser;
+import javaautomata.analyser.SyntaxAnalyser;
 import javaautomata.lexical.exceptions.LexemeParsingException;
 import javaautomata.lexical.lexeme.Lexeme;
 
@@ -112,11 +116,11 @@ public class Automata {
      */
     public void toDot(String arg) throws IOException {
 
-        String dir = (arg != null) ? (String) this.metadata.get("filePath") : arg;
+        String dir = (arg.equals("default")) ? (String) this.metadata.get("filePath") : arg;
 
         String fileName = (String) this.metadata.get("fileName");
         fileName = fileName.substring(0, fileName.indexOf("."));
-        String dotFile = dir + fileName + ".dot";
+        String dotFile = dir + "/" + fileName + ".dot";
         System.out.println(dir);
 
         /* Initialisation */
@@ -163,13 +167,17 @@ public class Automata {
      * @throws IOException
      */
     public void toPng(String arg) throws IOException {
-        String dir = (arg != null) ? (String) this.metadata.get("filePath") : arg;
+
+        /*to dot first*/
+        toDot(arg);
+
+        String dir = (arg.equals("default")) ? (String) this.metadata.get("filePath") : arg;
         String fileName = (String) this.metadata.get("fileName");
         fileName = fileName.substring(0, fileName.indexOf("."));
-        String pngFile = dir + fileName + ".png";
+        String pngFile = dir + "/" + fileName + ".png";
 
         Process p;
-        p = new ProcessBuilder("dot", "-Tpng", dir + fileName + ".dot", "-o", pngFile).start();
+        p = new ProcessBuilder("dot", "-Tpng", dir + "/" + fileName + ".dot", "-o", pngFile).start();
         BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
         BufferedReader err = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
@@ -197,11 +205,11 @@ public class Automata {
      */
     public void toDescr(String arg) throws IOException {
 
-        String dir = (arg != null) ? (String) this.metadata.get("filePath") : arg;
+        String dir = (arg.equals("default")) ? (String) this.metadata.get("filePath") : arg;
 
         String fileName = (String) this.metadata.get("fileName");
         fileName = fileName.substring(0, fileName.indexOf("."));
-        String descrFile = dir + fileName + ".descr";
+        String descrFile = dir + "/" + fileName + ".descr";
 
         try (BufferedWriter fw = new BufferedWriter(new FileWriter(descrFile))) {
             String ref = "CMVOEIFT";
@@ -220,14 +228,21 @@ public class Automata {
 
     public void addToComposition(Character key, String input) throws LexemeParsingException {
 
-        Lexeme value = new LexicalAnalyser(input).createLexeme();
-
         if (key != 'T' && this.composition.get(key) != null) {
-            throw new LexemeParsingException("Semantic error: On ne peut pas avoir plusieur item de clé " + key);
+            throw new LexemeParsingException("Syntax error: On ne peut pas avoir plusieur item de clé " + key);
         }
+        
+        Lexeme value = new LexicalAnalyser(key + " " + input).createLexeme();
 
         List<Lexeme> temp = this.composition.get(key);
         temp = (temp == null) ? new ArrayList<>() : temp;
+
+        for (Lexeme l : temp) {
+            if (l.equals(value)) {
+                System.err.println("Syntax warning: Value already exists!");
+            }
+            return;
+        }
 
         temp.add(value);
         this.composition.put(key, temp);
@@ -235,6 +250,7 @@ public class Automata {
 
     /**
      * Get the composition of an automaton
+     *
      * @return the dictionary containing all the normalised lexeme.
      */
     public Map<Character, List<Lexeme>> getComposition() {
@@ -254,6 +270,40 @@ public class Automata {
 
     public Graph getGraph() {
         return graph;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Automata res = new Automata();
+        try {
+            for (Character c : this.composition.keySet()) {
+                for (Lexeme l : this.composition.get(c)) {
+                    res.addToComposition(l.getSymbol(), String.join(" ", l.getContent()));
+                }
+            }
+
+            SyntaxAnalyser sa = new SyntaxAnalyser(res);
+            sa.checkSyntax();
+
+            SemanticAnalyser sea = new SemanticAnalyser(res);
+            sea.checkDeterministic();
+
+            res.getGraph().buildGraph();
+
+        } catch (LexemeParsingException ex) {
+            Logger.getLogger(Automata.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NumberFormatException ex) {
+            Logger.getLogger(Automata.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return res;
+
+    }
+
+    @Override
+    public String toString() {
+        return "INFO AUTOMATE: \n"
+                + "\t>> Composition: " + this.composition
+                + "\t>> Metadata: " + this.metadata;
     }
 
 }
