@@ -49,7 +49,8 @@ public class Transformer {
         System.out.println(outAutomata);
         
         String oldName = (String) outAutomata.getMetadata().get("fileName");
-        outAutomata.getMetadata().put("fileName", oldName.substring(0, oldName.indexOf(".")-1) + ".dfa.descr");
+        System.out.println(oldName);
+        outAutomata.getMetadata().put("fileName", oldName.substring(0, oldName.lastIndexOf(".")) + ".dfa.descr");
         
         List<Node> P = closure(inAutomata.getGraph().getTree().values());
         List<Node> L = new ArrayList<>();

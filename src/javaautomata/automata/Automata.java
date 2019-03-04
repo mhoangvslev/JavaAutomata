@@ -14,7 +14,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -39,8 +39,8 @@ public class Automata {
      * Build an automate from scratch
      */
     public Automata() {
-        this.composition = new HashMap<>();
-        this.metadata = new HashMap<>();
+        this.composition = new LinkedHashMap<>();
+        this.metadata = new LinkedHashMap<>();
         this.graph = new Graph(this);
     }
 
@@ -50,8 +50,8 @@ public class Automata {
      * @param fileName
      */
     public Automata(String fileName) {
-        this.composition = new HashMap<>();
-        this.metadata = new HashMap<>();
+        this.composition = new LinkedHashMap<>();
+        this.metadata = new LinkedHashMap<>();
         this.graph = new Graph(this);
         this.fromDescr(fileName);
     }
@@ -119,7 +119,7 @@ public class Automata {
         String dir = (arg.equals("default")) ? (String) this.metadata.get("filePath") : arg;
 
         String fileName = (String) this.metadata.get("fileName");
-        fileName = fileName.substring(0, fileName.indexOf("."));
+        fileName = fileName.substring(0, fileName.lastIndexOf("."));
         String dotFile = dir + "/" + fileName + ".dot";
         System.out.println(dir);
 
@@ -173,7 +173,7 @@ public class Automata {
 
         String dir = (arg.equals("default")) ? (String) this.metadata.get("filePath") : arg;
         String fileName = (String) this.metadata.get("fileName");
-        fileName = fileName.substring(0, fileName.indexOf("."));
+        fileName = fileName.substring(0, fileName.lastIndexOf("."));
         String pngFile = dir + "/" + fileName + ".png";
 
         Process p;
@@ -208,7 +208,7 @@ public class Automata {
         String dir = (arg.equals("default")) ? (String) this.metadata.get("filePath") : arg;
 
         String fileName = (String) this.metadata.get("fileName");
-        fileName = fileName.substring(0, fileName.indexOf("."));
+        fileName = fileName.substring(0, fileName.lastIndexOf("."));
         String descrFile = dir + "/" + fileName + ".descr";
 
         try (BufferedWriter fw = new BufferedWriter(new FileWriter(descrFile))) {
@@ -231,7 +231,8 @@ public class Automata {
         if (key != 'T' && this.composition.get(key) != null) {
             throw new LexemeParsingException("Syntax error: On ne peut pas avoir plusieur item de clé " + key);
         }
-        
+
+        //System.out.println(key + " " + input);
         Lexeme value = new LexicalAnalyser(key + " " + input).createLexeme();
 
         List<Lexeme> temp = this.composition.get(key);
@@ -276,11 +277,8 @@ public class Automata {
     protected Object clone() throws CloneNotSupportedException {
         Automata res = new Automata();
         try {
-            for (Character c : this.composition.keySet()) {
-                for (Lexeme l : this.composition.get(c)) {
-                    res.addToComposition(l.getSymbol(), String.join(" ", l.getContent()));
-                }
-            }
+            res.getComposition().putAll(this.composition);
+            res.getMetadata().putAll(this.metadata);
 
             SyntaxAnalyser sa = new SyntaxAnalyser(res);
             sa.checkSyntax();

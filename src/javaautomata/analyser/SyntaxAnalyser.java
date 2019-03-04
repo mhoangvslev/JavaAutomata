@@ -82,7 +82,8 @@ public class SyntaxAnalyser {
 
         System.out.println("\t>> Summarise: " + this.metadata);
 
-        List<String> listUsedEtats = new ArrayList<>();
+        List<String> listUsedInState = new ArrayList<>();
+        List<String> listUsedOutState = new ArrayList<>();
         List<String> listUsedInputs = new ArrayList<>();
 
         /* Coherence check in T lexemes*/
@@ -94,10 +95,14 @@ public class SyntaxAnalyser {
             }
 
             /* meta */
-            if (!listUsedEtats.contains(lex.getContent().get(0))) {
-                listUsedEtats.add(lex.getContent().get(0));
+            if (!listUsedInState.contains(lex.getContent().get(0))) {
+                listUsedInState.add(lex.getContent().get(0));
             }
-            
+
+            if (!listUsedOutState.contains(lex.getContent().get(2))) {
+                listUsedOutState.add(lex.getContent().get(0));
+            }
+
             if (!listUsedInputs.contains(lex.getContent().get(1))) {
                 listUsedInputs.add(lex.getContent().get(1));
             }
@@ -128,9 +133,10 @@ public class SyntaxAnalyser {
         }
 
         /* Si on arrive ici, alles gut! */
-        
         this.metadata.put("usedInputs", listUsedInputs);
-        this.metadata.put("usedStates", listUsedEtats);
+        this.metadata.put("usedInStates", listUsedInState);
+        this.metadata.put("usedOutStates", listUsedOutState);
+
         System.out.println("\t> SYNTAX OK!");
     }
 

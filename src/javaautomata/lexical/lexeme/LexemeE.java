@@ -16,7 +16,7 @@ import javaautomata.lexical.exceptions.LexemeParsingException;
 public class LexemeE extends Lexeme {
 
     public LexemeE(char symbol, String content) throws LexemeParsingException {
-        super(symbol, content, "[" + REGEX_NUM + "]+");
+        super(symbol, content, "^[" + REGEX_NUM + "]+$");
     }
 
     @Override

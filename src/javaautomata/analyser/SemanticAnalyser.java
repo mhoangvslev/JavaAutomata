@@ -29,20 +29,22 @@ public class SemanticAnalyser {
         this.metadata = automate.getMetadata();
     }
 
+    /**
+     * Dire si AEF est deterministe
+     */
     public void checkDeterministic() {
-        boolean result = (this.composition.get('V').get(0).getContent().size() == 1);
+        boolean result = (this.composition.get('I').get(0).getContent().size() == 1);
         String sourceState = "", input = "";
-        while (result) {
-            for (Lexeme lex : this.composition.get('T')) {
-                String currentSource = lex.getContent().get(0);
-                String currentInput = lex.getContent().get(1);
-                result = result && currentSource.equals(sourceState) && currentInput.equals(input);
-                if (!result) {
-                    break;
-                }
-                sourceState = currentSource;
-                input = currentInput;
+        
+        for (Lexeme lex : this.composition.get('T')) {
+            String currentSource = lex.getContent().get(0);
+            String currentInput = lex.getContent().get(1);
+            result = result && (!currentSource.equals(sourceState) || !currentInput.equals(input));
+            if (!result) {
+                break;
             }
+            sourceState = currentSource;
+            input = currentInput;
         }
 
         this.metadata.put("estDeterministe", result);
@@ -54,15 +56,24 @@ public class SemanticAnalyser {
 
     }
 
+    /**
+     * Dire si AEF est complet Déf: ∀e ∈ E, a ∈ V, ∃e' : (e, a, e', o) ∈ ∆ Rejet
+     * si: ∃e ∈ E, a ∈ V, ∀e' : (e, a, e', o) ~∈ ∆
+     */
     public void checkComplete() {
         boolean result = true;
 
         int nbEtats = (int) this.metadata.get("nb_etats");
-        List<String> states = (List<String>) this.metadata.get("usedStates");
-        for (int i = 0; i < nbEtats; i++) {
-            if (!states.contains("" + i)) {
-                result = false;
-                break;
+        List<String> inStates = (List<String>) this.metadata.get("usedInStates");
+        List<String> outStates = (List<String>) this.metadata.get("usedInStates");
+
+        for (int i = 0; i < nbEtats && result; i++) {
+            if (!inStates.contains("" + i)) {
+                for (int j = 0; i < nbEtats && result; j++) {
+                    if (outStates.contains("" + j)) {
+                        result = false;
+                    }
+                }
             }
         }
 

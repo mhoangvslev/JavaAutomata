@@ -12,7 +12,7 @@ import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -35,7 +35,7 @@ class Node {
     public Node(String nodeName, Node parentNode, boolean isInit, boolean isFinal) {
         this.nodeName = nodeName;
         this.parentNode = parentNode;
-        this.children = new HashMap<>();
+        this.children = new LinkedHashMap<>();
         this.isInit = isInit;
         this.isFinal = isFinal;
     }
@@ -107,7 +107,7 @@ public class Graph {
      */
     Graph(Automata automata) {
         this.automata = automata;
-        this.tree = new HashMap<>();
+        this.tree = new LinkedHashMap<>();
         this.log = "";
     }
 
