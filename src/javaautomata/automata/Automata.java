@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javaautomata.lexical.LexemeBuilder;
+import javaautomata.analyser.LexicalAnalyser;
 import javaautomata.lexical.exceptions.LexemeParsingException;
 import javaautomata.lexical.lexeme.Lexeme;
 
@@ -77,7 +77,7 @@ public class Automata {
             ArrayList<Lexeme> lexemes = new ArrayList<>();
             Lexeme lexeme = null;
             while ((line = br.readLine()) != null) {
-                lexeme = new LexemeBuilder(line).createLexeme();
+                lexeme = new LexicalAnalyser(line).createLexeme();
                 lexemes.add(lexeme);
 
                 if (lexeme.getSymbol() == 'T') {
@@ -152,6 +152,7 @@ public class Automata {
 
             /* Finalisation */
             fw.flush();
+            fw.close();
         }
     }
 
@@ -212,13 +213,14 @@ public class Automata {
             }
 
             fw.flush();
+            fw.close();
         }
 
     }
 
     public void addToComposition(Character key, String input) throws LexemeParsingException {
 
-        Lexeme value = new LexemeBuilder(input).createLexeme();
+        Lexeme value = new LexicalAnalyser(input).createLexeme();
 
         if (key != 'T' && this.composition.get(key) != null) {
             throw new LexemeParsingException("Semantic error: On ne peut pas avoir plusieur item de clé " + key);
@@ -233,7 +235,6 @@ public class Automata {
 
     /**
      * Get the composition of an automaton
-     *
      * @return the dictionary containing all the normalised lexeme.
      */
     public Map<Character, List<Lexeme>> getComposition() {

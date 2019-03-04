@@ -97,16 +97,23 @@ class Node {
  */
 public class Graph {
 
-    private Map<String, Node> tree;
-    private Automata automata;
+    private final Map<String, Node> tree;
+    private final Automata automata;
     private String log;
 
+    /**
+     * 
+     * @param automata 
+     */
     Graph(Automata automata) {
         this.automata = automata;
         this.tree = new HashMap<>();
         this.log = "";
     }
 
+    /**
+     * 
+     */
     public void buildGraph() {
         List<String> inits = (List<String>) automata.getMetadata().get("etats_init");
         List<String> finals = (List<String>) automata.getMetadata().get("etats_acceptants");
@@ -142,6 +149,10 @@ public class Graph {
         displayGraph(this.tree.get("0"), "-");
     }
 
+    /**
+     * 
+     * @param script 
+     */
     public void translateFromScript(String script) {
         try {
             BufferedReader br = new BufferedReader(new StringReader(script));
@@ -165,6 +176,10 @@ public class Graph {
         }
     }
 
+    /**
+     * 
+     * @param line 
+     */
     private void interprete(String line) {
         log("Processing sequence '" + line + "':");
 
@@ -179,6 +194,13 @@ public class Graph {
         log("-- End of line --");
     }
 
+    /**
+     * 
+     * @param node
+     * @param itr
+     * @param letter
+     * @return 
+     */
     private String readFrom(Node node, StringCharacterIterator itr, char letter) {
 
         String result = "";
@@ -218,6 +240,11 @@ public class Graph {
         this.log = "";
     }
 
+    /**
+     * 
+     * @param node
+     * @param lvl 
+     */
     public void displayGraph(Node node, String lvl) {
         log(lvl + " " + node.getNodeName());
         lvl += lvl;

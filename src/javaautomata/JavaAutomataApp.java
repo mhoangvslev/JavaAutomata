@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javaautomata.automata.Automata;
-import javaautomata.lexical.LexicalAnalyser;
+import javaautomata.analyser.SyntaxAnalyser;
 import javaautomata.lexical.exceptions.LexemeParsingException;
 import javaautomata.lexical.lexeme.Lexeme;
 import javax.swing.JFileChooser;
@@ -22,7 +22,7 @@ import javax.swing.JFileChooser;
 public class JavaAutomataApp extends javax.swing.JFrame {
 
     private Automata mAutomate;
-    private LexicalAnalyser mAnalyser;
+    private SyntaxAnalyser mAnalyser;
     private String mScript = "";
 
     /**
@@ -352,8 +352,8 @@ public class JavaAutomataApp extends javax.swing.JFrame {
             try {
                 File file = chooser.getSelectedFile();
                 this.mAutomate = new Automata(file.getAbsolutePath());
-                this.mAnalyser = new LexicalAnalyser(this.mAutomate);
-                this.mAnalyser.checkSemantic();
+                this.mAnalyser = new SyntaxAnalyser(this.mAutomate);
+                this.mAnalyser.checkSyntax();
                 this.mAutomate.getGraph().buildGraph();
 
                 this.updateAutomate();
@@ -391,7 +391,7 @@ public class JavaAutomataApp extends javax.swing.JFrame {
     private void miFromScratchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miFromScratchActionPerformed
         // TODO add your handling code here:
         this.mAutomate = new Automata();
-        this.mAnalyser = new LexicalAnalyser(this.mAutomate);
+        this.mAnalyser = new SyntaxAnalyser(this.mAutomate);
         this.updateAutomate();
     }//GEN-LAST:event_miFromScratchActionPerformed
 

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package javaautomata.lexical;
+package javaautomata.analyser;
 
 import javaautomata.lexical.lexeme.*;
 import javaautomata.lexical.exceptions.LexemeParsingException;
@@ -13,7 +13,7 @@ import javaautomata.lexical.exceptions.LexemeParsingException;
  *
  * @author minhhoangdang
  */
-public class LexemeBuilder {
+public class LexicalAnalyser {
 
     private final char symbol;
     private final String content;
@@ -23,7 +23,7 @@ public class LexemeBuilder {
      * @param line the line fed from file reading process
      * @throws LexemeParsingException
      */
-    public LexemeBuilder(String line) throws LexemeParsingException {
+    public LexicalAnalyser(String line) throws LexemeParsingException {
         symbol = line.charAt(0);
         evaluateLexemeClass(symbol); // will exit if fails
         content = line.substring(2);
@@ -73,7 +73,7 @@ public class LexemeBuilder {
     public static void main(String[] args) {
         try {
             String testLine = "T 0 'p' 2 'p'";
-            Lexeme testLex = new LexemeBuilder(testLine).createLexeme();
+            Lexeme testLex = new LexicalAnalyser(testLine).createLexeme();
             System.out.println(testLex);
         } catch (LexemeParsingException ex) {
             System.out.println(ex.getMessage());

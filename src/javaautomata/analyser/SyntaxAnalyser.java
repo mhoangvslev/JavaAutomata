@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package javaautomata.lexical;
+package javaautomata.analyser;
 
 import javaautomata.lexical.lexeme.Lexeme;
 import java.util.ArrayList;
@@ -17,15 +17,16 @@ import javaautomata.lexical.lexeme.*;
  *
  * @author minhhoangdang
  */
-public class LexicalAnalyser {
+public class SyntaxAnalyser {
 
     private final Map<Character, List<Lexeme>> composition;
     private final Map<String, Object> metadata;
 
     /**
      * Constructeur
+     * @param automate l'automate à analyser
      */
-    public LexicalAnalyser(Automata automate) {
+    public SyntaxAnalyser(Automata automate) {
         this.composition = automate.getComposition();
         this.metadata = automate.getMetadata();
     }
@@ -35,7 +36,7 @@ public class LexicalAnalyser {
      *
      * @throws LexemeParsingException
      */
-    public void checkSemantic() throws LexemeParsingException, NumberFormatException {
+    public void checkSyntax() throws LexemeParsingException, NumberFormatException {
         /* Add defaults */
         if (!this.composition.containsKey('M')) {
             System.out.println("\t>> Méta-caractère n'étant pas précisé, interpretation avec # par défaut");
@@ -53,19 +54,19 @@ public class LexicalAnalyser {
 
         /* Errors */
         if (!this.composition.containsKey('V')) {
-            throw new LexemeParsingException("Semantic error (V): Pas de vocabulaire d'entrée");
+            throw new LexemeParsingException("Syntax error (V): Pas de vocabulaire d'entrée");
         }
 
         if (!this.composition.containsKey('E')) {
-            throw new LexemeParsingException("Semantic error (E): Le nombre d'état n'est pas précisé");
+            throw new LexemeParsingException("Syntax error (E): Le nombre d'état n'est pas précisé");
         }
 
         if (!this.composition.containsKey('F')) {
-            throw new LexemeParsingException("Semantic error: Pas d'états acceptants");
+            throw new LexemeParsingException("Syntax error: Pas d'états acceptants");
         }
 
         if (!this.composition.containsKey('T')) {
-            throw new LexemeParsingException("Semantic error: Pas de transition!");
+            throw new LexemeParsingException("Syntax error: Pas de transition!");
         }
 
         System.out.println("\t>>" + this.composition);
@@ -114,7 +115,7 @@ public class LexicalAnalyser {
         }
 
         /* Si on arrive ici, alles gut! */
-        System.out.println("\t> SEMANTIC OK!");
+        System.out.println("\t> SYNTAX OK!");
     }
 
     /**
