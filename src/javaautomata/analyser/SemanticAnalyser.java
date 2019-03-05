@@ -5,6 +5,9 @@
  */
 package javaautomata.analyser;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javaautomata.automata.Automata;
@@ -35,7 +38,7 @@ public class SemanticAnalyser {
     public void checkDeterministic() {
         boolean result = (this.composition.get('I').get(0).getContent().size() == 1);
         String sourceState = "", input = "";
-        
+
         for (Lexeme lex : this.composition.get('T')) {
             String currentSource = lex.getContent().get(0);
             String currentInput = lex.getContent().get(1);
@@ -61,32 +64,15 @@ public class SemanticAnalyser {
      * si: ∃e ∈ E, a ∈ V, ∀e' : (e, a, e', o) ~∈ ∆
      */
     public void checkComplete() {
-        boolean result = true;
+        Collection<String> inStates = (Collection<String>) this.metadata.get("usedInStates");
+        Collection<String> outStates = (Collection<String>) this.metadata.get("usedOutStates");
+        List<String> a, b;
+        a = new ArrayList<>(inStates);
+        b = new ArrayList<>(outStates);
+        
+        Collections.sort(a);
+        Collections.sort(b);
 
-        int nbEtats = (int) this.metadata.get("nb_etats");
-        List<String> inStates = (List<String>) this.metadata.get("usedInStates");
-        List<String> outStates = (List<String>) this.metadata.get("usedInStates");
-
-        for (int i = 0; i < nbEtats && result; i++) {
-            if (!inStates.contains("" + i)) {
-                for (int j = 0; i < nbEtats && result; j++) {
-                    if (outStates.contains("" + j)) {
-                        result = false;
-                    }
-                }
-            }
-        }
-
-        String vocab_entree = (String) this.metadata.get("vocab_entree");
-        List<String> inputs = (List<String>) this.metadata.get("usedInputs");
-
-        for (String input : inputs) {
-            if (!vocab_entree.contains(input)) {
-                result = false;
-                break;
-            }
-        }
-
-        this.metadata.put("estComplet", result);
+        this.metadata.put("estComplet", a.equals(b));
     }
 }

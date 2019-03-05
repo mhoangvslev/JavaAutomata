@@ -232,21 +232,16 @@ public class Automata {
             throw new LexemeParsingException("Syntax error: On ne peut pas avoir plusieur item de clé " + key);
         }
 
-        //System.out.println(key + " " + input);
+        //System.out.println("Adding " + key + " " + input);
         Lexeme value = new LexicalAnalyser(key + " " + input).createLexeme();
 
         List<Lexeme> temp = this.composition.get(key);
         temp = (temp == null) ? new ArrayList<>() : temp;
 
-        for (Lexeme l : temp) {
-            if (l.equals(value)) {
-                System.err.println("Syntax warning: Value already exists!");
-            }
-            return;
+        if (!temp.contains(key)) {
+            temp.add(value);
+            this.composition.put(key, temp);
         }
-
-        temp.add(value);
-        this.composition.put(key, temp);
     }
 
     /**

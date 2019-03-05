@@ -24,17 +24,17 @@ public abstract class Lexeme {
      * REGEX component representing "not word" (\W)
      */
     public final static String REGEX_META = "(\\W)";
-    
+
     /**
      * REGEX component representing "alphanumeric" (\w)
      */
     public final static String REGEX_ALPHA = "\\w";
-    
+
     /**
      * REGEX component representing digit
      */
     public final static String REGEX_NUM = "0-9";
-    
+
     /**
      * REGEX component representing quotation marks
      */
@@ -90,7 +90,8 @@ public abstract class Lexeme {
 
     /**
      * Returns the content of a lexeme
-     * @return List of tokens 
+     *
+     * @return List of tokens
      */
     public List<String> getContent() {
         return content;
@@ -106,6 +107,7 @@ public abstract class Lexeme {
 
     /**
      * Tokenise the contents
+     *
      * @param str
      * @return List of tokens
      */
@@ -122,6 +124,7 @@ public abstract class Lexeme {
 
     /**
      * Return the lexeme class
+     *
      * @return the class of the lexeme
      */
     public char getSymbol() {
@@ -132,4 +135,14 @@ public abstract class Lexeme {
     public String toString() {
         return symbol + " " + content;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Lexeme) {
+            Lexeme l = (Lexeme) o;
+            return l.toString().equals(o.toString());
+        }
+        return false;
+    }
+
 }

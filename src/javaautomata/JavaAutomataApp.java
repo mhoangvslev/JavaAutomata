@@ -363,6 +363,17 @@ public class JavaAutomataApp extends javax.swing.JFrame {
 
     private void miFromFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miFromFileActionPerformed
         // TODO add your handling code here:
+        File tempDir = new File("temp/");
+        if (tempDir.exists()) {
+            for (File f : tempDir.listFiles()) {
+                f.delete();
+            }
+        }else{
+            tempDir.mkdir();
+        }
+        
+        tempDir.deleteOnExit();
+
         JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(new File("."));
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);

@@ -15,22 +15,54 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javaautomata.lexical.lexeme.Lexeme;
+
+class Label implements Comparable {
+
+    private final String input;
+    private final String output;
+
+    public Label(String input, String output) {
+        this.input = input;
+        this.output = output;
+    }
+
+    public String getInput() {
+        return input;
+    }
+
+    public String getOutput() {
+        return output;
+    }
+
+    @Override
+    public String toString() {
+        return input + "/" + output;
+    }
+
+    @Override
+    public int compareTo(Object t) {
+        return this.toString().compareTo(t.toString());
+    }
+
+}
 
 /**
  * Node in a graph
  *
  * @author minhhoangdang
  */
-class Node {
+class Node implements Comparable {
 
     private final String nodeName;
     private final boolean isInit;
     private final boolean isFinal;
     private Node parentNode;
-    private final Map<Node, String[]> children;
+    private final Map<Node, TreeSet<Label>> children;
 
     public Node(String nodeName, Node parentNode, boolean isInit, boolean isFinal) {
         this.nodeName = nodeName;
@@ -41,10 +73,13 @@ class Node {
     }
 
     public void addChild(String input, String output, Node child) {
-        String[] cond = new String[2];
-        cond[0] = input;
-        cond[1] = output;
-        this.children.put(child, cond);
+        TreeSet<Label> temp = this.children.get(child);
+        temp = temp == null ? new TreeSet<>() : temp;
+
+        Label cond = new Label(input, output);
+        temp.add(cond);
+
+        this.children.put(child, temp);
     }
 
     public String getNodeName() {
@@ -59,18 +94,26 @@ class Node {
         return parentNode;
     }
 
-    public String getTransitionInput(Node child) {
-        return this.children.get(child)[0];
+    public Collection<String> getTransitionInput(Node child) {
+        TreeSet<String> res = new TreeSet<>();
+        for (Label label : this.children.get(child)) {
+            res.add(label.getInput());
+        }
+        return res;
     }
 
-    public String getTransitionOutput(Node child) {
-        return this.children.get(child)[1];
+    public TreeSet<String> getTransitionOutput(Node child) {
+        TreeSet<String> res = new TreeSet<>();
+        for (Label label : this.children.get(child)) {
+            res.add(label.getOutput());
+        }
+        return res;
     }
 
     public Collection<Node> getChildByInput(String input) {
-        Collection<Node> result = new ArrayList<>();
+        TreeSet<Node> result = new TreeSet<>();
         for (Node node : this.children.keySet()) {
-            if (this.children.get(node)[0].contains(input)) {
+            if (this.getTransitionInput(node).contains(input)) {
                 result.add(node);
             }
         }
@@ -87,6 +130,30 @@ class Node {
 
     public boolean isFinal() {
         return isFinal;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Node other = (Node) obj;
+        if (!Objects.equals(this.nodeName, other.nodeName)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int compareTo(Object t) {
+        Node n = (Node) t;
+        return n.getNodeName().compareTo(nodeName);
     }
 
 }
@@ -208,17 +275,35 @@ public class Graph {
         log(">> Reading " + letter + " ...");
         if (letter == CharacterIterator.DONE) {
             log(">> CurrentState: " + node.getNodeName() + ", End of sequence");
+            if (node.isFinal()) {
+                log(">> Input is final!");
+            } else {
+                log(">> Input is not final!");
+            }
+
+            return result;
+        }
+
+        if (node.getChildren().isEmpty()) {
+            log(">> CurrentState: " + node.getNodeName() + ", No next transition found");
+            if (node.isFinal()) {
+                log(">> Input is final!");
+            } else {
+                log(">> Input is not final!");
+            }
+
             return result;
         }
 
         for (Node child : node.getChildByInput("" + letter)) {
-            String input = node.getTransitionInput(child);
-            String output = node.getTransitionOutput(child);
-            if (output.contains("#")) {
-                log(">> CurrentState: " + node.getNodeName() + ", Input: " + input + ", [Transition found]");
-            } else {
-                log(">> CurrentState: " + node.getNodeName() + ", Input: " + input + ", Output: " + output + ", [Transition found]");
-                result += output;
+
+            for (String output: node.getTransitionOutput(child)) {
+                if (output.contains("#")) {
+                    log(">> CurrentState: " + node.getNodeName() + ", Input: " + letter + ", [Transition found]");
+                } else {
+                    log(">> CurrentState: " + node.getNodeName() + ", Input: " + letter + ", Output: " + output + ", [Transition found]");
+                    result += output;
+                }
             }
 
             result += readFrom(child, itr, itr.next());
@@ -240,8 +325,14 @@ public class Graph {
         this.log = "";
     }
 
-    public Map<String, Node> getTree() {
-        return tree;
+    public Collection<Node> getEntries() {
+        List<Node> res = new ArrayList<>();
+        for (Node n : this.tree.values()) {
+            if (n.isInit()) {
+                res.add(n);
+            }
+        }
+        return res;
     }
 
     /**

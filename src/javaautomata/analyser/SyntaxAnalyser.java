@@ -9,6 +9,7 @@ import javaautomata.lexical.lexeme.Lexeme;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import javaautomata.automata.Automata;
 import javaautomata.lexical.exceptions.LexemeParsingException;
 import javaautomata.lexical.lexeme.*;
@@ -82,9 +83,9 @@ public class SyntaxAnalyser {
 
         System.out.println("\t>> Summarise: " + this.metadata);
 
-        List<String> listUsedInState = new ArrayList<>();
-        List<String> listUsedOutState = new ArrayList<>();
-        List<String> listUsedInputs = new ArrayList<>();
+        TreeSet<String> listUsedInState = new TreeSet<>();
+        TreeSet<String> listUsedOutState = new TreeSet<>();
+        TreeSet<String> listUsedInputs = new TreeSet<>();
 
         /* Coherence check in T lexemes*/
         for (Lexeme lex : this.composition.get('T')) {
@@ -120,7 +121,7 @@ public class SyntaxAnalyser {
                     }
                 } /* Vérifier si ID est dans le vocab d'entréé */ else if (i == 1) {
                     String vocabEntree = (String) this.metadata.get("vocab_entree");
-                    if (!vocabEntree.contains(token)) {
+                    if (!(vocabEntree + this.metadata.get("meta")).contains(token)) {
                         throw new LexemeParsingException("L'ID de l'état '" + token + "' doit être dans '" + vocabEntree + "'");
                     }
                 } /* Vérifier si ID est dans le vocab de sortie */ else {

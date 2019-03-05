@@ -14,7 +14,7 @@ import javaautomata.lexical.exceptions.LexemeParsingException;
 public class LexemeF extends Lexeme{
     
     public LexemeF(char symbol, String content) throws LexemeParsingException {
-        super(symbol, content, "^["+ REGEX_NUM +"]+(\\s["+ REGEX_NUM +"]+){0,3}$");
+        super(symbol, content, "^["+ REGEX_NUM +"]+(\\s["+ REGEX_NUM +"]+)*$");
     }
     
 }
