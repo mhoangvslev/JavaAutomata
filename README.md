@@ -27,3 +27,6 @@ line T (trans) ::= i 'x' i 'x' : ExVxExO transition
 # How to use?
 Simply launch ```sh launch.sh```
 The UI is quite intuitive, to use.
+
+# Documentation
+For further development or evaluation, please refer to the [document](https://mhoangvslev.github.io/JavaAutomata/index.html)
