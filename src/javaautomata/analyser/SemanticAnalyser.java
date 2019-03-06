@@ -60,8 +60,8 @@ public class SemanticAnalyser {
     }
 
     /**
-     * Dire si AEF est complet Déf: ∀e ∈ E, a ∈ V, ∃e' : (e, a, e', o) ∈ ∆ Rejet
-     * si: ∃e ∈ E, a ∈ V, ∀e' : (e, a, e', o) ~∈ ∆
+     * Dire si AEF est complet.
+     * Si il y a autant d'état entrant que d'état sortant
      */
     public void checkComplete() {
         Collection<String> inStates = (Collection<String>) this.metadata.get("usedInStates");

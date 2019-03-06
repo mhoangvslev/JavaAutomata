@@ -14,6 +14,10 @@ import java.util.Objects;
 import java.util.Stack;
 import javaautomata.lexical.exceptions.LexemeParsingException;
 
+/**
+ * Un super-état comprend une liste d'état dans AEFND
+ * @author minhhoangdang
+ */
 class SuperState {
 
     private static int id = 0;
@@ -89,6 +93,10 @@ class SuperState {
 
 }
 
+/**
+ * La transition entre deux super-états
+ * @author minhhoangdang
+ */
 class Transition {
 
     private final SuperState depart;
@@ -104,10 +112,18 @@ class Transition {
         this.arrivee = arrivee;
     }
 
+    /**
+     * Dire si ce super-état contient au moins un état AEFND final
+     * @return boolean
+     */
     public boolean hasFinal() {
         return hasFinal;
     }
 
+    /**
+     * Exporter dans un format convenable pour creer des lexemes
+     * @return String
+     */
     public String toContent() {
         return String.join(" ", Arrays.asList(depart.getName(), input, arrivee.getName(), output));
     }
@@ -123,9 +139,8 @@ public class Transformer {
 
     /**
      * Deterministic Finite Automata to Non-Deterministic
-     *
-     * @param inAutomata
-     * @return
+     * @param inAutomata un AEFND
+     * @return un AEFD
      * @throws LexemeParsingException
      * @throws CloneNotSupportedException
      */
@@ -199,9 +214,9 @@ public class Transformer {
     }
 
     /**
-     *
-     * @param T
-     * @return
+     * Realiser une lambda-fermeture sur un super état
+     * @param T un super-état
+     * @return un super-état
      */
     private static SuperState closure(SuperState T) {
         Stack<Node> p = new Stack();
@@ -222,10 +237,10 @@ public class Transformer {
     }
 
     /**
-     *
-     * @param T
-     * @param input
-     * @return
+     * Transiter depuis un super-état T par un charactère entrant
+     * @param T un super-état
+     * @param input un mot entrant
+     * @return le super-état sortant
      */
     private static SuperState transiter(SuperState T, char input) {
         List<Node> F = new ArrayList<>();
