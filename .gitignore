@@ -5,3 +5,8 @@ dist/
 
 temp/
 
+nbproject/
+
+build.xml
+
+manifest.mf
