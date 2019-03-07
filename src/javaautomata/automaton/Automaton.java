@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package javaautomata.automata;
+package javaautomata.automaton;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -29,7 +29,7 @@ import javaautomata.lexical.lexeme.Lexeme;
  *
  * @author minhhoangdang
  */
-public class Automata {
+public class Automaton {
 
     private final Map<Character, List<Lexeme>> composition;
     private final Map<String, Object> metadata;
@@ -38,7 +38,7 @@ public class Automata {
     /**
      * Build an automate from scratch
      */
-    public Automata() {
+    public Automaton() {
         this.composition = new LinkedHashMap<>();
         this.metadata = new LinkedHashMap<>();
         this.graph = new Graph(this);
@@ -49,7 +49,7 @@ public class Automata {
      *
      * @param fileName
      */
-    public Automata(String fileName) {
+    public Automaton(String fileName) {
         this.composition = new LinkedHashMap<>();
         this.metadata = new LinkedHashMap<>();
         this.graph = new Graph(this);
@@ -270,7 +270,7 @@ public class Automata {
 
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        Automata res = new Automata();
+        Automaton res = new Automaton();
         try {
             res.getComposition().putAll(this.composition);
             res.getMetadata().putAll(this.metadata);
@@ -284,9 +284,9 @@ public class Automata {
             res.getGraph().buildGraph();
 
         } catch (LexemeParsingException ex) {
-            Logger.getLogger(Automata.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Automaton.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NumberFormatException ex) {
-            Logger.getLogger(Automata.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Automaton.class.getName()).log(Level.SEVERE, null, ex);
         }
         return res;
 

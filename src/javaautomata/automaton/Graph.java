@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package javaautomata.automata;
+package javaautomata.automaton;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -165,14 +165,14 @@ class Node implements Comparable {
 public class Graph {
 
     private final Map<String, Node> tree;
-    private final Automata automata;
+    private final Automaton automata;
     private String log;
 
     /**
      *
      * @param automata
      */
-    Graph(Automata automata) {
+    Graph(Automaton automata) {
         this.automata = automata;
         this.tree = new LinkedHashMap<>();
         this.log = "";

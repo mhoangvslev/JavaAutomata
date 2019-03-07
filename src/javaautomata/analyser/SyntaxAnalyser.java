@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
-import javaautomata.automata.Automata;
+import javaautomata.automaton.Automaton;
 import javaautomata.lexical.exceptions.LexemeParsingException;
 import javaautomata.lexical.lexeme.*;
 
@@ -28,7 +28,7 @@ public class SyntaxAnalyser {
      *
      * @param automate l'automate à analyser
      */
-    public SyntaxAnalyser(Automata automate) {
+    public SyntaxAnalyser(Automaton automate) {
         this.composition = automate.getComposition();
         this.metadata = automate.getMetadata();
     }

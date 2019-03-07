@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import javaautomata.automata.Automata;
+import javaautomata.automaton.Automaton;
 import javaautomata.lexical.lexeme.Lexeme;
 
 /**
@@ -27,7 +27,7 @@ public class SemanticAnalyser {
      *
      * @param automate l'automate à analyser
      */
-    public SemanticAnalyser(Automata automate) {
+    public SemanticAnalyser(Automaton automate) {
         this.composition = automate.getComposition();
         this.metadata = automate.getMetadata();
     }

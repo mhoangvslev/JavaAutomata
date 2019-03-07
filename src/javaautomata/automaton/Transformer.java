@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package javaautomata.automata;
+package javaautomata.automaton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -138,15 +138,15 @@ public class Transformer {
     private static String meta = "#";
 
     /**
-     * Deterministic Finite Automata to Non-Deterministic
+     * Deterministic Finite Automaton to Non-Deterministic
      * @param inAutomata un AEFND
      * @return un AEFD
      * @throws LexemeParsingException
      * @throws CloneNotSupportedException
      */
-    public static Automata DFA2NDFA(Automata inAutomata) throws LexemeParsingException, CloneNotSupportedException {
+    public static Automaton DFA2NDFA(Automaton inAutomata) throws LexemeParsingException, CloneNotSupportedException {
 
-        Automata outAutomata = new Automata();
+        Automaton outAutomata = new Automaton();
         outAutomata.getComposition().putAll(inAutomata.getComposition());
         outAutomata.getComposition().remove('T');
         outAutomata.getComposition().remove('I');
